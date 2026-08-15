@@ -20,10 +20,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rdlabo-team/capacitor-screenshot-event.git"
+    "url": "git+https://github.com/rdlabo-dev/capacitor-screenshot-event.git"
   },
   "bugs": {
-    "url": "https://github.com/rdlabo-team/capacitor-screenshot-event/issues"
+    "url": "https://github.com/rdlabo-dev/capacitor-screenshot-event/issues"
   },
   "keywords": [
     "capacitor",
