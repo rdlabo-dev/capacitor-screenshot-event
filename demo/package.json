@@ -57,5 +57,8 @@
     "typescript": "~5.9.3",
     "vitest": "^4.0.0"
   },
+  "overrides": {
+    "uuid": "^14.0.0"
+  },
   "description": "An Ionic project"
 }
