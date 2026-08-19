@@ -65,10 +65,10 @@ Use this plugin when you want to react to screenshots in your app, for example:
 
 <docgen-index>
 
-- [`startWatchEvent()`](#startwatchevent)
-- [`removeWatchEvent()`](#removewatchevent)
-- [`addListener('userDidTakeScreenshot', ...)`](#addlisteneruserdidtakescreenshot-)
-- [Interfaces](#interfaces)
+* [`startWatchEvent()`](#startwatchevent)
+* [`removeWatchEvent()`](#removewatchevent)
+* [`addListener('userDidTakeScreenshot', ...)`](#addlisteneruserdidtakescreenshot-)
+* [Interfaces](#interfaces)
 
 </docgen-index>
 
@@ -81,7 +81,8 @@ Use this plugin when you want to react to screenshots in your app, for example:
 startWatchEvent() => Promise<void>
 ```
 
----
+--------------------
+
 
 ### removeWatchEvent()
 
@@ -89,7 +90,8 @@ startWatchEvent() => Promise<void>
 removeWatchEvent() => Promise<void>
 ```
 
----
+--------------------
+
 
 ### addListener('userDidTakeScreenshot', ...)
 
@@ -104,9 +106,11 @@ addListener(eventName: 'userDidTakeScreenshot', listenerFunc: () => void) => Pro
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
----
+--------------------
+
 
 ### Interfaces
+
 
 #### PluginListenerHandle
 
