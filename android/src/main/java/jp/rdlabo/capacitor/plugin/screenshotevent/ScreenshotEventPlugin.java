@@ -1,5 +1,6 @@
 package jp.rdlabo.capacitor.plugin.screenshotevent;
 
+import android.app.Activity;
 import android.os.Environment;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -15,13 +16,15 @@ public class ScreenshotEventPlugin extends Plugin {
 
     @PluginMethod
     public void startWatchEvent(PluginCall call) {
-        screenshotEvent.startWatching();
+        Activity activity = getActivity();
+        screenshotEvent.startWatching(activity);
         call.resolve();
     }
 
     @PluginMethod
     public void removeWatchEvent(PluginCall call) {
-        screenshotEvent.stopWatching();
+        Activity activity = getActivity();
+        screenshotEvent.stopWatching(activity);
         call.resolve();
     }
 }
