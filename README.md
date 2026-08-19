@@ -1,8 +1,17 @@
 # @rdlabo/capacitor-screenshot-event
 
-Notification that user shot screenshot
+<!-- rdlabo-docs-omit -->
+[![npm version](https://badge.fury.io/js/@rdlabo%2Fcapacitor-screenshot-event.svg)](https://badge.fury.io/js/@rdlabo%2Fcapacitor-screenshot-event)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- /rdlabo-docs-omit -->
 
-**Documentation:** [Read the full documentation](https://docs.rdlabo.dev/projects/capacitor-screenshot-event)
+Notify your Capacitor app when the user takes a screenshot.
+
+This plugin listens for screenshot events on iOS and Android and delivers them to your web layer through a Capacitor event listener. It is useful for analytics, security prompts, or content-protection workflows.
+
+<!-- rdlabo-docs-omit -->
+**Full documentation:** [https://docs.rdlabo.dev/projects/capacitor-screenshot-event](https://docs.rdlabo.dev/projects/capacitor-screenshot-event)
+<!-- /rdlabo-docs-omit -->
 
 ## Install
 
@@ -13,25 +22,53 @@ npx cap sync
 
 ## Usage
 
+See [ScreenshotEvent](./docs/screenshot-event.md) to watch, handle, and stop screenshot events.
+
+<!-- rdlabo-docs-omit -->
+Start watching for screenshot events and register a listener:
+
 ```ts
-(() => {
-  ScreenshotEvent.addListener('userDidTakeScreenshot', () => {
-    // Notice take screenshot
+import { ScreenshotEvent } from '@rdlabo/capacitor-screenshot-event';
+
+const start = async () => {
+  await ScreenshotEvent.addListener('userDidTakeScreenshot', () => {
+    console.log('Screenshot was taken');
   });
 
-  // Start watch take event
-  ScreenshotEvent.startWatchEvent();
-})();
+  await ScreenshotEvent.startWatchEvent();
+};
 ```
+
+Stop watching when the listener is no longer needed:
+
+```ts
+await ScreenshotEvent.removeWatchEvent();
+```
+
+<!-- /rdlabo-docs-omit -->
+
+## When to use
+
+Use this plugin when you want to react to screenshots in your app, for example:
+
+- Show a confirmation or warning after a screenshot is taken.
+- Log screenshot events for analytics or audit trails.
+- Trigger UI changes, such as blurring sensitive content.
+
+## Platform notes
+
+- **iOS**: Uses the `UIApplication.userDidTakeScreenshotNotification` notification.
+- **Android**: Observes content changes on the media store.
+- **Web**: Not supported because browsers do not expose screenshot events.
 
 ## API
 
 <docgen-index>
 
-* [`startWatchEvent()`](#startwatchevent)
-* [`removeWatchEvent()`](#removewatchevent)
-* [`addListener('userDidTakeScreenshot', ...)`](#addlisteneruserdidtakescreenshot-)
-* [Interfaces](#interfaces)
+- [`startWatchEvent()`](#startwatchevent)
+- [`removeWatchEvent()`](#removewatchevent)
+- [`addListener('userDidTakeScreenshot', ...)`](#addlisteneruserdidtakescreenshot-)
+- [Interfaces](#interfaces)
 
 </docgen-index>
 
@@ -44,8 +81,7 @@ npx cap sync
 startWatchEvent() => Promise<void>
 ```
 
---------------------
-
+---
 
 ### removeWatchEvent()
 
@@ -53,8 +89,7 @@ startWatchEvent() => Promise<void>
 removeWatchEvent() => Promise<void>
 ```
 
---------------------
-
+---
 
 ### addListener('userDidTakeScreenshot', ...)
 
@@ -69,11 +104,9 @@ addListener(eventName: 'userDidTakeScreenshot', listenerFunc: () => void) => Pro
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
---------------------
-
+---
 
 ### Interfaces
-
 
 #### PluginListenerHandle
 
@@ -82,3 +115,9 @@ addListener(eventName: 'userDidTakeScreenshot', listenerFunc: () => void) => Pro
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
 </docgen-api>
+
+<!-- rdlabo-docs-omit -->
+## License
+
+This project is licensed under the [MIT License](./LICENSE).
+<!-- /rdlabo-docs-omit -->
