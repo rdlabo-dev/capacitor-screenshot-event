@@ -26,6 +26,14 @@ ScreenshotEvent.addListener('userDidTakeScreenshot', () => {
 ScreenshotEvent.startWatchEvent();
 ```
 
+### Android 14+ note
+
+On Android 14 (API 34) and later, this plugin uses the system privacy-preserving
+`Activity.ScreenCaptureCallback` API. Detection is only triggered while the current
+`Activity` is visible, and older Android versions are treated as best-effort.
+
+The system may show a notification when screenshot detection is triggered.
+
 ## removeWatchEvent
 
 ```ts
