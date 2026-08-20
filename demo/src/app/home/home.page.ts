@@ -1,5 +1,6 @@
 import { ScreenshotEvent } from '@rdlabo/capacitor-screenshot-event';
-import {Component, NgZone} from '@angular/core';
+import type { PluginListenerHandle } from '@capacitor/core';
+import { Component, inject, NgZone, OnDestroy } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -8,12 +9,12 @@ import {
   IonList,
   IonItem,
   IonLabel,
-  IonToggle, IonIcon
+  IonToggle,
+  IonIcon,
 } from '@ionic/angular/standalone';
-import {addIcons} from 'ionicons';
-import {checkmarkCircle} from 'ionicons/icons';
-import {FormsModule} from '@angular/forms';
-
+import { addIcons } from 'ionicons';
+import { checkmarkCircle } from 'ionicons/icons';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
@@ -21,22 +22,39 @@ import {FormsModule} from '@angular/forms';
   styleUrls: ['home.page.scss'],
   imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonToggle, FormsModule, IonIcon],
 })
-export class HomePage {
-    isEnabled = false;
-    didNoticed = false;
-    constructor(private zone: NgZone) {
-        ScreenshotEvent.addListener('userDidTakeScreenshot', () => {
-            this.zone.run(() => (this.didNoticed = true));
-        });
-        addIcons({ checkmarkCircle });
-    }
+export class HomePage implements OnDestroy {
+  isEnabled = false;
+  didNoticed = false;
+  screenCaptureState = 'Not detected';
+  private readonly listenerHandles: Promise<PluginListenerHandle[]>;
+  private readonly zone = inject(NgZone);
 
-    initialize(event: CustomEvent) {
-        this.didNoticed = false;
-        if (event.detail.checked) {
-            ScreenshotEvent.startWatchEvent().then(() => console.log('startWatchEvent'))
-        } else {
-            ScreenshotEvent.removeWatchEvent();
-        }
+  constructor() {
+    this.listenerHandles = Promise.all([
+      ScreenshotEvent.addListener('userDidTakeScreenshot', () => {
+        this.zone.run(() => (this.didNoticed = true));
+      }),
+      ScreenshotEvent.addListener('screenCaptureStarted', () => {
+        this.zone.run(() => (this.screenCaptureState = 'Started'));
+      }),
+      ScreenshotEvent.addListener('screenCaptureStopped', () => {
+        this.zone.run(() => (this.screenCaptureState = 'Stopped'));
+      }),
+    ]);
+    addIcons({ checkmarkCircle });
+  }
+
+  ngOnDestroy(): void {
+    void this.listenerHandles.then((handles) => Promise.all(handles.map((handle) => handle.remove())));
+  }
+
+  initialize(event: CustomEvent) {
+    this.didNoticed = false;
+    this.screenCaptureState = 'Not detected';
+    if (event.detail.checked) {
+      ScreenshotEvent.startWatchEvent().then(() => console.log('startWatchEvent'));
+    } else {
+      ScreenshotEvent.removeWatchEvent();
     }
+  }
 }
