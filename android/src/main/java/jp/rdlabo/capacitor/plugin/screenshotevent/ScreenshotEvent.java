@@ -9,26 +9,19 @@ import com.google.android.gms.common.util.BiConsumer;
 
 public class ScreenshotEvent {
 
-    protected BiConsumer<String, JSObject> notifyListenersFunction;
+    private final BiConsumer<String, JSObject> notifyListenersFunction;
     private final JSObject emptyObject = new JSObject();
 
-    private final String filepath;
+    private final String filePath;
     private FileObserver fileObserver;
 
     private boolean watching = false;
     private Activity registeredActivity;
-    private final Activity.ScreenCaptureCallback screenCaptureCallback;
+    private Object screenCaptureCallback;
 
-    public ScreenshotEvent(String filepath, BiConsumer<String, JSObject> notifyListenersFunction) {
-        this.filepath = filepath;
+    public ScreenshotEvent(String filePath, BiConsumer<String, JSObject> notifyListenersFunction) {
+        this.filePath = filePath;
         this.notifyListenersFunction = notifyListenersFunction;
-        this.screenCaptureCallback = new Activity.ScreenCaptureCallback() {
-            @Override
-            public void onScreenCaptured() {
-                notifyListeners("userDidTakeScreenshot", emptyObject);
-                Log.i("ScreenshotEvent", "onScreenCaptured()");
-            }
-        };
     }
 
     protected void notifyListeners(String eventName, JSObject data) {
@@ -41,14 +34,14 @@ public class ScreenshotEvent {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             if (activity == null) return;
             // Android 14+ provides a privacy-preserving, per-Activity callback.
-            activity.registerScreenCaptureCallback(activity.getMainExecutor(), screenCaptureCallback);
+            screenCaptureCallback = Api34ScreenCapture.register(activity, this::notifyScreenshotTaken);
             registeredActivity = activity;
             watching = true;
             return;
         }
 
         // Older Android: best-effort via fixed directory observer.
-        fileObserver = new FileObserver(filepath) {
+        fileObserver = new FileObserver(filePath) {
             @Override
             public void onEvent(int event, String path) {
                 if (event == FileObserver.CREATE) {
@@ -66,9 +59,10 @@ public class ScreenshotEvent {
         watching = false;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            if (registeredActivity != null) {
-                registeredActivity.unregisterScreenCaptureCallback(screenCaptureCallback);
+            if (registeredActivity != null && screenCaptureCallback != null) {
+                Api34ScreenCapture.unregister(registeredActivity, screenCaptureCallback);
                 registeredActivity = null;
+                screenCaptureCallback = null;
             }
             return;
         }
@@ -76,6 +70,25 @@ public class ScreenshotEvent {
         if (fileObserver != null) {
             fileObserver.stopWatching();
             fileObserver = null;
+        }
+    }
+
+    private void notifyScreenshotTaken() {
+        notifyListeners("userDidTakeScreenshot", emptyObject);
+        Log.i("ScreenshotEvent", "onScreenCaptured()");
+    }
+
+    @android.annotation.TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private static final class Api34ScreenCapture {
+
+        private static Object register(Activity activity, Runnable onScreenCaptured) {
+            Activity.ScreenCaptureCallback callback = onScreenCaptured::run;
+            activity.registerScreenCaptureCallback(activity.getMainExecutor(), callback);
+            return callback;
+        }
+
+        private static void unregister(Activity activity, Object callback) {
+            activity.unregisterScreenCaptureCallback((Activity.ScreenCaptureCallback) callback);
         }
     }
 }
