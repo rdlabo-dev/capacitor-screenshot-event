@@ -16,19 +16,19 @@ public class ScreenshotEvent {
     private FileObserver fileObserver;
 
     private boolean watching = false;
+    private Activity registeredActivity;
     private final Activity.ScreenCaptureCallback screenCaptureCallback;
 
     public ScreenshotEvent(String filepath, BiConsumer<String, JSObject> notifyListenersFunction) {
         this.filepath = filepath;
         this.notifyListenersFunction = notifyListenersFunction;
-        this.screenCaptureCallback =
-            new Activity.ScreenCaptureCallback() {
-                @Override
-                public void onScreenCaptured() {
-                    notifyListeners("userDidTakeScreenshot", emptyObject);
-                    Log.i("ScreenshotEvent", "onScreenCaptured()");
-                }
-            };
+        this.screenCaptureCallback = new Activity.ScreenCaptureCallback() {
+            @Override
+            public void onScreenCaptured() {
+                notifyListeners("userDidTakeScreenshot", emptyObject);
+                Log.i("ScreenshotEvent", "onScreenCaptured()");
+            }
+        };
     }
 
     protected void notifyListeners(String eventName, JSObject data) {
@@ -37,36 +37,39 @@ public class ScreenshotEvent {
 
     public void startWatching(Activity activity) {
         if (watching) return;
-        watching = true;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             if (activity == null) return;
             // Android 14+ provides a privacy-preserving, per-Activity callback.
             activity.registerScreenCaptureCallback(activity.getMainExecutor(), screenCaptureCallback);
+            registeredActivity = activity;
+            watching = true;
             return;
         }
 
         // Older Android: best-effort via fixed directory observer.
-        fileObserver =
-            new FileObserver(filepath) {
-                @Override
-                public void onEvent(int event, String path) {
-                    if (event == FileObserver.CREATE) {
-                        notifyListeners("userDidTakeScreenshot", emptyObject);
-                        Log.i("ScreenshotEvent", "FileObserver CREATE: " + path);
-                    }
+        fileObserver = new FileObserver(filepath) {
+            @Override
+            public void onEvent(int event, String path) {
+                if (event == FileObserver.CREATE) {
+                    notifyListeners("userDidTakeScreenshot", emptyObject);
+                    Log.i("ScreenshotEvent", "FileObserver CREATE: " + path);
                 }
-            };
+            }
+        };
         fileObserver.startWatching();
+        watching = true;
     }
 
-    public void stopWatching(Activity activity) {
+    public void stopWatching() {
         if (!watching) return;
         watching = false;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            if (activity == null) return;
-            activity.unregisterScreenCaptureCallback(screenCaptureCallback);
+            if (registeredActivity != null) {
+                registeredActivity.unregisterScreenCaptureCallback(screenCaptureCallback);
+                registeredActivity = null;
+            }
             return;
         }
 

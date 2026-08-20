@@ -23,8 +23,13 @@ public class ScreenshotEventPlugin extends Plugin {
 
     @PluginMethod
     public void removeWatchEvent(PluginCall call) {
-        Activity activity = getActivity();
-        screenshotEvent.stopWatching(activity);
+        screenshotEvent.stopWatching();
         call.resolve();
+    }
+
+    @Override
+    protected void handleOnDestroy() {
+        screenshotEvent.stopWatching();
+        super.handleOnDestroy();
     }
 }
