@@ -121,6 +121,12 @@ addListener(eventName: 'userDidTakeScreenshot', listenerFunc: () => void) => Pro
 </docgen-api>
 
 <!-- rdlabo-docs-omit -->
+## Maintainers
+
+- [rdlabo](https://rdlabo.dev/)
+<!-- /rdlabo-docs-omit -->
+
+<!-- rdlabo-docs-omit -->
 ## License
 
 This project is licensed under the [MIT License](./LICENSE).
