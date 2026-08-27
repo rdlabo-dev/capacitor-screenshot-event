@@ -14,6 +14,10 @@ const handle = await ScreenshotEvent.addListener('userDidTakeScreenshot', () => 
 await handle.remove();
 ```
 
+<!-- !::addListener.userDidTakeScreenshot:: -->
+
+<!-- !::PluginListenerHandle:: -->
+
 ## startWatchEvent
 
 ```ts
@@ -26,6 +30,8 @@ ScreenshotEvent.addListener('userDidTakeScreenshot', () => {
 ScreenshotEvent.startWatchEvent();
 ```
 
+<!-- !::startWatchEvent:: -->
+
 ## removeWatchEvent
 
 ```ts
@@ -34,4 +40,4 @@ import { ScreenshotEvent } from '@rdlabo/capacitor-screenshot-event';
 ScreenshotEvent.removeWatchEvent();
 ```
 
-Signatures are on the [API](/docs/api) page.
+<!-- !::removeWatchEvent:: -->
