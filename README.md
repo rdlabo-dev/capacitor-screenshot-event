@@ -22,7 +22,7 @@ npx cap sync
 
 ## Usage
 
-See [ScreenshotEvent](./docs/screenshot-event.md) to watch, handle, and stop screenshot events.
+See [ScreenshotEvent](https://docs.rdlabo.dev/projects/capacitor-screenshot-event/docs/screenshot-event) to watch, handle, and stop screenshot events.
 
 <!-- rdlabo-docs-omit -->
 Start watching for screenshot events and register a listener:
