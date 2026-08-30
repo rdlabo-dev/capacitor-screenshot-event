@@ -1,5 +1,7 @@
 package jp.rdlabo.capacitor.plugin.screenshotevent;
 
+import android.app.Activity;
+import android.os.Build;
 import android.os.Environment;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -11,11 +13,17 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 public class ScreenshotEventPlugin extends Plugin {
 
     private static final String PATH = Environment.getExternalStorageDirectory().toString() + "/Pictures/Screenshots/";
-    private ScreenshotEvent screenshotEvent = new ScreenshotEvent(PATH, this::notifyListeners);
+    private final ScreenshotEvent screenshotEvent = new ScreenshotEvent(PATH, this::notifyListeners);
 
     @PluginMethod
     public void startWatchEvent(PluginCall call) {
-        screenshotEvent.startWatching();
+        Activity activity = getActivity();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && activity == null) {
+            call.reject("Activity is unavailable");
+            return;
+        }
+
+        screenshotEvent.startWatching(activity);
         call.resolve();
     }
 
@@ -23,5 +31,11 @@ public class ScreenshotEventPlugin extends Plugin {
     public void removeWatchEvent(PluginCall call) {
         screenshotEvent.stopWatching();
         call.resolve();
+    }
+
+    @Override
+    protected void handleOnDestroy() {
+        screenshotEvent.stopWatching();
+        super.handleOnDestroy();
     }
 }
