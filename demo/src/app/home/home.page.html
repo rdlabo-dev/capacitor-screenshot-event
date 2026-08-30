@@ -13,12 +13,12 @@
     <ion-item>
       <ion-label>Notificaation</ion-label>
       @if (didNoticed) {
-        <ion-icon
-          slot="end"
-          name="checkmark-circle"
-          [color]="didNoticed ? 'success' : 'danger'"
-        ></ion-icon>
+      <ion-icon slot="end" name="checkmark-circle" [color]="didNoticed ? 'success' : 'danger'"></ion-icon>
       }
+    </ion-item>
+    <ion-item>
+      <ion-label>Screen capture</ion-label>
+      <ion-label slot="end">{{ screenCaptureState }}</ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

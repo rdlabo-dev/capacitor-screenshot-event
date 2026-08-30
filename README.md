@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- /rdlabo-docs-omit -->
 
-Notify your Capacitor app when the user takes a screenshot.
+Notify your Capacitor app when the user takes a screenshot or starts and stops screen capture.
 
 This plugin listens for screenshot events on iOS and Android and delivers them to your web layer through a Capacitor event listener. It is useful for analytics, security prompts, or content-protection workflows.
 
@@ -58,7 +58,17 @@ Use this plugin when you want to react to screenshots in your app, for example:
 ## Platform notes
 
 - **iOS**: Uses the `UIApplication.userDidTakeScreenshotNotification` notification.
-- **Android**: Observes content changes on the media store.
+- **iOS screen capture**: Uses `UIScreen.capturedDidChangeNotification`. Capture includes screen
+  recording, mirroring, AirPlay, and other forms of screen cloning.
+- **Android screenshots**: Uses `Activity.ScreenCaptureCallback` on Android 14 (API level 34) and
+  later. Older versions observe the screenshots directory as a best-effort fallback.
+- **Android screen capture**: Available on Android 15 (API level 35) and later. Events indicate whether
+  the app is visible in a screen recording. Older versions do not provide a reliable public API.
+- **Screen capture event timing**: `screenCaptureStarted` and `screenCaptureStopped` report state
+  transitions that occur after `startWatchEvent()`; the current state is not emitted on registration.
+- **Android permissions**: The library declares the install-time permissions
+  `android.permission.DETECT_SCREEN_CAPTURE` and `android.permission.DETECT_SCREEN_RECORDING`. They
+  appear in the consuming app's merged manifest; neither permission requires a runtime prompt.
 - **Web**: Not supported because browsers do not expose screenshot events.
 
 ## API
@@ -68,6 +78,8 @@ Use this plugin when you want to react to screenshots in your app, for example:
 * [`startWatchEvent()`](#startwatchevent)
 * [`removeWatchEvent()`](#removewatchevent)
 * [`addListener('userDidTakeScreenshot', ...)`](#addlisteneruserdidtakescreenshot-)
+* [`addListener('screenCaptureStarted', ...)`](#addlistenerscreencapturestarted-)
+* [`addListener('screenCaptureStopped', ...)`](#addlistenerscreencapturestopped-)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -103,6 +115,38 @@ addListener(eventName: 'userDidTakeScreenshot', listenerFunc: () => void) => Pro
 | ------------------ | ------------------------------------ |
 | **`eventName`**    | <code>'userDidTakeScreenshot'</code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>           |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener('screenCaptureStarted', ...)
+
+```typescript
+addListener(eventName: 'screenCaptureStarted', listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                |
+| ------------------ | ----------------------------------- |
+| **`eventName`**    | <code>'screenCaptureStarted'</code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>          |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener('screenCaptureStopped', ...)
+
+```typescript
+addListener(eventName: 'screenCaptureStopped', listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                |
+| ------------------ | ----------------------------------- |
+| **`eventName`**    | <code>'screenCaptureStopped'</code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>          |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
