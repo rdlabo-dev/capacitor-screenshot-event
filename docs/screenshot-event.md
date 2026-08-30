@@ -24,6 +24,10 @@ await captureStarted.remove();
 await captureStopped.remove();
 ```
 
+<!-- !::addListener.userDidTakeScreenshot:: -->
+
+<!-- !::PluginListenerHandle:: -->
+
 ## startWatchEvent
 
 ```ts
@@ -35,6 +39,8 @@ ScreenshotEvent.addListener('userDidTakeScreenshot', () => {
 
 ScreenshotEvent.startWatchEvent();
 ```
+
+<!-- !::startWatchEvent:: -->
 
 On iOS, screen capture includes recording, mirroring, AirPlay, and other screen cloning. On Android,
 screen capture events are available on Android 15 (API level 35) and later and indicate whether this
@@ -62,4 +68,4 @@ import { ScreenshotEvent } from '@rdlabo/capacitor-screenshot-event';
 ScreenshotEvent.removeWatchEvent();
 ```
 
-Signatures are on the [API](/docs/api) page.
+<!-- !::removeWatchEvent:: -->

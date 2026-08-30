@@ -26,6 +26,7 @@
   "bugs": {
     "url": "https://github.com/rdlabo-dev/capacitor-screenshot-event/issues"
   },
+  "homepage": "https://docs.rdlabo.dev/projects/capacitor-screenshot-event",
   "keywords": [
     "capacitor",
     "plugin",
