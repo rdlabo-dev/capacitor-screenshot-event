@@ -5,9 +5,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- /rdlabo-docs-omit -->
 
-Notify your Capacitor app when the user takes a screenshot.
+Notify your Capacitor app after the user takes a screenshot.
 
-This plugin listens for screenshot events on iOS and Android and delivers them to your web layer through a Capacitor event listener. It is useful for analytics, security prompts, or content-protection workflows.
+Use the event for post-capture guidance or in-app UI updates (for example a toast or analytics log). The notification arrives after a screenshot is taken; it does not protect or blur content before capture.
 
 <!-- rdlabo-docs-omit -->
 **Full documentation:** [https://docs.rdlabo.dev/projects/capacitor-screenshot-event](https://docs.rdlabo.dev/projects/capacitor-screenshot-event)
@@ -22,43 +22,39 @@ npx cap sync
 
 ## Usage
 
-See [ScreenshotEvent](./docs/screenshot-event.md) to watch, handle, and stop screenshot events.
+See [ScreenshotEvent](./docs/screenshot-event.md) to register a listener, start watching, confirm one physical screenshot on a device, then stop and remove the handle.
 
 <!-- rdlabo-docs-omit -->
-Start watching for screenshot events and register a listener:
+Register a listener, start watching, take a screenshot on a physical device, then stop watching and remove the handle when leaving or destroying the screen:
 
 ```ts
 import { ScreenshotEvent } from '@rdlabo/capacitor-screenshot-event';
+import type { PluginListenerHandle } from '@capacitor/core';
+
+let handle: PluginListenerHandle | undefined;
 
 const start = async () => {
-  await ScreenshotEvent.addListener('userDidTakeScreenshot', () => {
+  if (handle) return;
+  handle = await ScreenshotEvent.addListener('userDidTakeScreenshot', () => {
     console.log('Screenshot was taken');
   });
 
   await ScreenshotEvent.startWatchEvent();
 };
-```
 
-Stop watching when the listener is no longer needed:
-
-```ts
-await ScreenshotEvent.removeWatchEvent();
+const stop = async () => {
+  await ScreenshotEvent.removeWatchEvent();
+  await handle?.remove();
+  handle = undefined;
+};
 ```
 
 <!-- /rdlabo-docs-omit -->
 
-## When to use
-
-Use this plugin when you want to react to screenshots in your app, for example:
-
-- Show a confirmation or warning after a screenshot is taken.
-- Log screenshot events for analytics or audit trails.
-- Trigger UI changes, such as blurring sensitive content.
-
 ## Platform notes
 
 - **iOS**: Uses the `UIApplication.userDidTakeScreenshotNotification` notification.
-- **Android**: Observes content changes on the media store.
+- **Android** (8.0.0): Watches `FileObserver.CREATE` on the fixed path `Pictures/Screenshots/` under external storage. Detection depends on screenshots being saved to that directory; it is not a MediaStore change observer and is not guaranteed on every Android device or OEM gallery path.
 - **Web**: Not supported because browsers do not expose screenshot events.
 
 ## API
