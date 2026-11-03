@@ -56,7 +56,7 @@
     "eslint-plugin-prefer-arrow": "1.2.2",
     "jsdom": "^25.0.1",
     "typescript": "~5.9.3",
-    "vitest": "^4.0.0"
+    "vitest": "^4.1.11"
   },
   "overrides": {
     "uuid": "^14.0.0"
